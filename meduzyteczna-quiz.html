@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medużyteczna · Testy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #0ea87a;
+    --green-light: #e6f7f2;
+    --green-dark: #0a7a59;
+    --red: #e84040;
+    --red-light: #fdf0f0;
+    --amber: #d97706;
+    --amber-light: #fffbeb;
+    --blue: #3b7dd8;
+    --blue-light: #eff6ff;
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --border: #e8eaef;
+    --border-strong: #d0d5de;
+    --text: #1a1d23;
+    --text-muted: #6b7280;
+    --text-faint: #9ca3af;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── LAYOUT ── */
+  .app { max-width: 680px; margin: 0 auto; padding: 16px; }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .logo { font-size: 15px; font-weight: 600; letter-spacing: -.3px; }
+  .logo em { color: var(--green); font-style: normal; }
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .header-meta strong { color: var(--text); }
+  .timer-pill {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: .5px;
+  }
+  .timer-pill.warning { background: #fff8f0; border-color: #fcd34d; color: var(--amber); }
+
+  /* ── PROGRESS ── */
+  .progress-wrap { margin-bottom: 16px; }
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #34d399);
+    border-radius: 2px;
+    transition: width .4s ease;
+  }
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 5px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  /* ── SETUP ── */
+  .setup-heading {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    letter-spacing: -.3px;
+  }
+  .setup-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-faint);
+    margin-bottom: 8px;
+  }
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
+    gap: 7px;
+    margin-bottom: 20px;
+  }
+  .cat-btn {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-align: left;
+    transition: all .15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .cat-btn:hover { border-color: var(--green); color: var(--text); background: var(--green-light); }
+  .cat-btn.sel { background: var(--green-light); border-color: var(--green); color: var(--green-dark); }
+  .cat-btn .cnt { display: block; font-size: 11px; font-weight: 400; color: var(--text-faint); margin-top: 2px; font-family: 'DM Mono', monospace; }
+  .cat-btn.sel .cnt { color: var(--green); }
+
+  .pill-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .pill {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--bg);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .pill:hover { border-color: var(--border-strong); color: var(--text); }
+  .pill.sel-green { background: var(--green-light); border-color: var(--green); color: var(--green-dark); }
+  .pill.sel-blue { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
+
+  .start-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: -.2px;
+    transition: background .15s, transform .1s;
+    margin-top: 4px;
+  }
+  .start-btn:hover { background: var(--green-dark); }
+  .start-btn:active { transform: scale(.99); }
+  .start-btn:disabled { background: var(--border); color: var(--text-faint); cursor: default; }
+
+  /* ── QUESTION CARD ── */
+  .q-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .q-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 5px;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+  }
+  .badge-cat { background: var(--blue-light); color: var(--blue); }
+  .badge-diff-1 { background: #f0fdf4; color: #166534; }
+  .badge-diff-2 { background: #fffbeb; color: #92400e; }
+  .badge-diff-3 { background: #fef2f2; color: #991b1b; }
+  .badge-multi { background: #f5f3ff; color: #5b21b6; }
+  .q-num { font-size: 12px; color: var(--text-faint); font-family: 'DM Mono', monospace; }
+
+  .q-image { width: 100%; max-height: 220px; object-fit: contain; border-radius: var(--radius); margin-bottom: 14px; border: 1px solid var(--border); }
+
+  .q-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--text);
+    margin-bottom: 16px;
+    letter-spacing: -.1px;
+  }
+  .multi-hint {
+    font-size: 12px;
+    color: #7c3aed;
+    background: #f5f3ff;
+    border: 1px solid #ede9fe;
+    border-radius: 6px;
+    padding: 7px 10px;
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  /* ── ANSWERS ── */
+  .answers { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+  .ans-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    cursor: pointer;
+    text-align: left;
+    transition: all .15s;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .ans-btn:hover:not(:disabled) { border-color: var(--border-strong); background: #f0f2f5; }
+  .ans-key {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    transition: all .15s;
+  }
+  .ans-text { font-size: 14px; color: var(--text); padding-top: 3px; line-height: 1.45; flex: 1; }
+  .ans-img { width: 100%; max-height: 120px; object-fit: contain; border-radius: 6px; margin-top: 6px; }
+
+  .ans-btn.sel .ans-key { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
+  .ans-btn.sel { border-color: var(--blue); background: var(--blue-light); }
+  .ans-btn.sel .ans-text { color: var(--blue); }
+
+  .ans-btn.correct { background: var(--green-light); border-color: var(--green); }
+  .ans-btn.correct .ans-key { background: var(--green); border-color: var(--green); color: #fff; }
+  .ans-btn.correct .ans-text { color: var(--green-dark); }
+
+  .ans-btn.wrong { background: var(--red-light); border-color: var(--red); }
+  .ans-btn.wrong .ans-key { background: var(--red); border-color: var(--red); color: #fff; }
+  .ans-btn.wrong .ans-text { color: #991b1b; }
+
+  .ans-btn.missed { background: var(--amber-light); border-color: var(--amber); }
+  .ans-btn.missed .ans-key { background: var(--amber); border-color: var(--amber); color: #fff; }
+  .ans-btn.missed .ans-text { color: #92400e; }
+
+  .ans-btn:disabled { cursor: default; }
+
+  /* ── EXPLANATION ── */
+  .explanation-block {
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    display: none;
+    border-left: 3px solid transparent;
+  }
+  .explanation-block.show { display: block; }
+  .explanation-block.ok { background: var(--green-light); border-color: var(--green); color: #065f46; }
+  .explanation-block.err { background: var(--red-light); border-color: var(--red); color: #7f1d1d; }
+  .exp-header { font-weight: 600; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+  .exp-ans-row { padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,.05); }
+  .exp-ans-row:last-child { border-bottom: none; }
+  .exp-ans-key { font-weight: 600; font-family: 'DM Mono', monospace; }
+
+  /* ── ACTIONS ── */
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .action-left { display: flex; gap: 6px; }
+  .action-right { display: flex; gap: 6px; }
+
+  .btn-icon {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--text-muted);
+    transition: all .15s;
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1;
+  }
+  .btn-icon:hover { border-color: var(--border-strong); color: var(--text); background: #edf0f3; }
+  .btn-icon.starred { color: var(--amber); background: var(--amber-light); border-color: #fcd34d; }
+
+  .btn-confirm {
+    padding: 9px 18px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background .15s;
+    display: none;
+  }
+  .btn-confirm:hover { background: #2563eb; }
+  .btn-confirm:disabled { background: var(--border); color: var(--text-faint); cursor: default; }
+
+  .btn-next {
+    padding: 9px 20px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background .15s;
+    min-width: 100px;
+  }
+  .btn-next:hover { background: var(--green-dark); }
+  .btn-next:disabled { background: var(--border); color: var(--text-faint); cursor: default; }
+
+  /* ── RESULTS ── */
+  .results-hero { text-align: center; padding: 20px 0 24px; }
+  .score-ring {
+    width: 110px; height: 110px;
+    margin: 0 auto 16px;
+    position: relative;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+  .score-ring .ring-fill { fill: none; stroke: var(--green); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset .6s ease; }
+  .score-ring .ring-fill.low { stroke: var(--red); }
+  .score-ring .ring-fill.mid { stroke: var(--amber); }
+  .score-text {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+  .score-pct { font-size: 24px; font-weight: 600; }
+  .score-pct.high { color: var(--green-dark); }
+  .score-pct.mid { color: var(--amber); }
+  .score-pct.low { color: var(--red); }
+  .score-label { font-size: 10px; color: var(--text-faint); font-family: 'DM Mono', monospace; letter-spacing: .5px; }
+  .results-title { font-size: 18px; font-weight: 600; letter-spacing: -.3px; margin-bottom: 4px; }
+  .results-sub { font-size: 13px; color: var(--text-muted); }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
+  .stat-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    text-align: center;
+  }
+  .stat-val { font-size: 22px; font-weight: 600; font-family: 'DM Mono', monospace; }
+  .stat-val.g { color: var(--green-dark); }
+  .stat-val.r { color: var(--red); }
+  .stat-val.b { color: var(--blue); }
+  .stat-lbl { font-size: 11px; color: var(--text-faint); margin-top: 3px; }
+
+  .res-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .res-btn {
+    flex: 1; min-width: 120px;
+    padding: 11px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+  }
+  .res-btn:hover { background: #edf0f3; border-color: var(--border-strong); }
+  .res-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
+  .res-btn.primary:hover { background: var(--green-dark); }
+
+  .wrong-section { margin-top: 20px; }
+  .wrong-section-title {
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-faint); margin-bottom: 10px;
+  }
+  .wrong-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    margin-bottom: 7px;
+    font-size: 13px;
+    background: var(--bg);
+  }
+  .wrong-q { color: var(--text); margin-bottom: 5px; line-height: 1.45; }
+  .wrong-row { display: flex; gap: 12px; }
+  .wrong-correct { color: var(--green-dark); font-size: 12px; }
+  .wrong-wrong { color: var(--red); font-size: 12px; }
+
+  /* ── LOADING ── */
+  .loading-screen {
+    text-align: center;
+    padding: 60px 24px;
+  }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-txt { font-size: 14px; color: var(--text-muted); }
+
+  /* ── EMPTY / ERROR ── */
+  .notice {
+    text-align: center; padding: 40px 24px;
+    font-size: 14px; color: var(--text-muted);
+  }
+  .notice strong { display: block; font-size: 16px; color: var(--text); margin-bottom: 6px; }
+
+  /* ── SCORE LIVE BAR ── */
+  .live-score-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text-muted);
+    margin-bottom: 14px; padding: 8px 12px;
+    background: var(--bg); border-radius: var(--radius);
+    border: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+  }
+  .live-score-row span strong { color: var(--text); }
+
+  /* ── SOURCE TAG ── */
+  .source-tag {
+    font-size: 11px; color: var(--text-faint);
+    font-family: 'DM Mono', monospace;
+    margin-top: 10px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .app { padding: 10px; }
+    .card { padding: 16px; }
+    .cat-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    .q-text { font-size: 15px; }
+    .setup-heading { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">Medu<em>żyteczna</em> · Testy</div>
+    <div class="header-meta" id="headerMeta" style="display:none">
+      <span>Pytanie <strong id="hdrCur">1</strong>/<strong id="hdrTot">10</strong></span>
+      <span><strong id="hdrPts">0</strong> pkt</span>
+      <div class="timer-pill" id="timerPill">⏱ <span id="timerVal">00:00</span></div>
+    </div>
+  </div>
+
+  <!-- SCREENS -->
+
+  <!-- LOADING -->
+  <div class="screen active" id="screenLoading">
+    <div class="card">
+      <div class="loading-screen">
+        <div class="spinner"></div>
+        <div class="loading-txt">Ładowanie pytań…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="screen" id="screenSetup">
+    <div class="card">
+      <div class="setup-heading">Skonfiguruj test</div>
+      <div class="setup-sub" id="setupSub">Załadowano pytania. Wybierz zakres i opcje.</div>
+
+      <div class="section-label">Działy (wybierz min. 1)</div>
+      <div class="cat-grid" id="catGrid"></div>
+
+      <div class="section-label">Liczba pytań</div>
+      <div class="pill-row" id="countPills"></div>
+
+      <div class="section-label">Tryb</div>
+      <div class="pill-row" id="modePills">
+        <button class="pill sel-green" data-v="learn">📖 Nauka</button>
+        <button class="pill" data-v="exam">📝 Egzamin</button>
+        <button class="pill" data-v="repeat">🔄 Powtórz błędne</button>
+      </div>
+
+      <div class="section-label">Poziom trudności</div>
+      <div class="pill-row" id="diffPills">
+        <button class="pill sel-green" data-v="all">Wszystkie</button>
+        <button class="pill" data-v="1">Łatwe</button>
+        <button class="pill" data-v="2">Średnie</button>
+        <button class="pill" data-v="3">Trudne</button>
+      </div>
+
+      <button class="start-btn" id="startBtn" disabled>Wybierz dział, aby rozpocząć</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="screenQuiz">
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+      <div class="progress-labels">
+        <span id="progLabel">0 / 0</span>
+        <span id="progPct">0%</span>
+      </div>
+    </div>
+
+    <!-- Live score -->
+    <div class="live-score-row" id="liveScoreRow">
+      <span>Wynik: <strong id="liveScore">0 / 0</strong></span>
+      <span id="liveCat">–</span>
+    </div>
+
+    <!-- Question card -->
+    <div class="card" id="questionCard">
+      <div class="q-meta">
+        <div class="q-badges" id="qBadges"></div>
+        <span class="q-num" id="qNum">1/10</span>
+      </div>
+      <img class="q-image" id="qImage" src="" alt="" style="display:none">
+      <div class="q-text" id="qText"></div>
+      <div class="multi-hint" id="multiHint">Zaznacz <strong>wszystkie</strong> prawidłowe odpowiedzi, a następnie zatwierdź.</div>
+      <div class="answers" id="answersDiv"></div>
+      <div class="explanation-block" id="explanationBlock">
+        <div class="exp-header" id="expHeader"></div>
+        <div id="expBody"></div>
+      </div>
+      <div class="actions">
+        <div class="action-left">
+          <button class="btn-icon" id="starBtn" title="Oznacz do powtórki">☆</button>
+          <button class="btn-icon" id="flagBtn" title="Zgłoś błąd" style="font-size:13px">⚑</button>
+        </div>
+        <div class="action-right">
+          <button class="btn-confirm" id="confirmBtn" disabled>Zatwierdź →</button>
+          <button class="btn-next" id="nextBtn" disabled>Dalej →</button>
+        </div>
+      </div>
+      <div class="source-tag" id="sourceTag"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="screenResults">
+    <div class="card">
+      <div class="results-hero">
+        <div class="score-ring">
+          <svg viewBox="0 0 100 100" width="110" height="110">
+            <circle class="ring-bg" cx="50" cy="50" r="42"/>
+            <circle class="ring-fill" id="ringFill" cx="50" cy="50" r="42"
+              stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+          </svg>
+          <div class="score-text">
+            <span class="score-pct" id="resPct">0%</span>
+            <span class="score-label">WYNIK</span>
+          </div>
+        </div>
+        <div class="results-title" id="resTitle">Test zakończony</div>
+        <div class="results-sub" id="resSub"></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val g" id="resCorrect">0</div><div class="stat-lbl">Poprawnych</div></div>
+        <div class="stat-card"><div class="stat-val r" id="resWrong">0</div><div class="stat-lbl">Błędnych</div></div>
+        <div class="stat-card"><div class="stat-val b" id="resTime">0:00</div><div class="stat-lbl">Czas</div></div>
+      </div>
+
+      <div class="res-actions">
+        <button class="res-btn primary" id="btnNewTest">Nowy test</button>
+        <button class="res-btn" id="btnRepeatWrong">🔄 Powtórz błędne</button>
+      </div>
+
+      <div class="wrong-section" id="wrongSection"></div>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="screen" id="screenError">
+    <div class="card">
+      <div class="notice">
+        <strong>Błąd ładowania</strong>
+        <span id="errorMsg">Nie udało się pobrać pytań.</span><br><br>
+        <button class="res-btn" onclick="loadData()" style="display:inline-block;min-width:140px">Spróbuj ponownie</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+const API_URL = "https://api.jsonbin.io/v3/b/69ef1d6daaba88219740fb0b";
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let allQuestions = [];
+let categories = [];
+let cfg = { cats: [], count: 10, mode: "learn", diff: "all" };
+let quiz = {
+  questions: [], idx: 0, score: 0, answered: 0,
+  wrong: [], starred: new Set(),
+  timerSec: 0, timerInterval: null,
+  confirmedMulti: false
+};
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function fmtTime(s) {
+  const m = Math.floor(s / 60), sec = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+}
+
+function getStorage(key, def) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch { return def; }
+}
+
+function setStorage(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+}
+
+const CAT_LABELS = {
+  interna: "Interna", pediatria: "Pediatria", chirurgia: "Chirurgia",
+  ginekologia: "Ginekologia", psychiatria: "Psychiatria",
+  med_rodzinna: "Med. rodzinna", ratunkowa: "Med. ratunkowa",
+  onkologia: "Onkologia", farmakologia: "Farmakologia",
+  dermatologia: "Dermatologia", neurologia: "Neurologia",
+  urologia: "Urologia", okulistyka: "Okulistyka",
+  kardiologia: "Kardiologia"
+};
+
+function catLabel(id) {
+  return CAT_LABELS[id] || id.charAt(0).toUpperCase() + id.slice(1).replace(/_/g, " ");
+}
+
+// ═══════════════════════════════════════════
+// DATA LOADING
+// ═══════════════════════════════════════════
+async function loadData() {
+  showScreen("screenLoading");
+  try {
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+
+    // Obsługa różnych formatów: pojedynczy obiekt, tablica, lub {record: ...}
+    let data = json;
+    if (data && data.record !== undefined) data = data.record;
+    if (!Array.isArray(data)) data = [data];
+
+    // Normalizacja struktury
+    allQuestions = data.map((q, i) => ({
+      id: q.id || `Q-${i}`,
+      category: q.category || q.cat || "ogolne",
+      subcategory: q.subcategory || "",
+      difficulty: q.difficulty || q.diff || 2,
+      source: q.source || "",
+      question: q.question || q.q || "",
+      question_image: q.question_image || q.qimage || null,
+      multi: Array.isArray(q.answers) ? q.answers.filter(a => a.correct).length > 1 : false,
+      answers: (q.answers || []).map(a => ({
+        key: a.key || a.k,
+        text: a.text || a.t || "",
+        image: a.image || null,
+        explanation: a.explanation || a.exp || "",
+        correct: !!a.correct
+      })),
+      tags: q.tags || [],
+    })).filter(q => q.answers.length > 0 && q.question);
+
+    if (allQuestions.length === 0) throw new Error("Brak pytań w danych");
+
+    // Zbierz unikalne kategorie
+    const catSet = new Set(allQuestions.map(q => q.category));
+    categories = [...catSet];
+
+    buildSetup();
+    showScreen("screenSetup");
+  } catch (e) {
+    document.getElementById("errorMsg").textContent = `Nie udało się pobrać pytań: ${e.message}`;
+    showScreen("screenError");
+  }
+}
+
+// ═══════════════════════════════════════════
+// SETUP
+// ═══════════════════════════════════════════
+function buildSetup() {
+  document.getElementById("setupSub").textContent =
+    `Załadowano ${allQuestions.length} pytań. Wybierz zakres i opcje.`;
+
+  // Categories
+  const g = document.getElementById("catGrid");
+  g.innerHTML = "";
+  categories.forEach(cat => {
+    const cnt = allQuestions.filter(q => q.category === cat).length;
+    const b = document.createElement("button");
+    b.className = "cat-btn";
+    b.dataset.id = cat;
+    b.innerHTML = `${catLabel(cat)}<span class="cnt">${cnt} pytań</span>`;
+    b.onclick = () => {
+      b.classList.toggle("sel");
+      cfg.cats = Array.from(document.querySelectorAll(".cat-btn.sel")).map(x => x.dataset.id);
+      updateStartBtn();
+    };
+    g.appendChild(b);
+  });
+
+  // Count pills (dynamiczne wg dostępności)
+  const maxQ = allQuestions.length;
+  const counts = [10, 25, 50, 100, 200].filter(n => n <= maxQ);
+  if (!counts.includes(maxQ) && maxQ <= 200) counts.push(maxQ);
+  const cp = document.getElementById("countPills");
+  cp.innerHTML = "";
+  counts.forEach((n, i) => {
+    const b = document.createElement("button");
+    b.className = "pill" + (i === 0 ? " sel-green" : "");
+    b.dataset.v = n;
+    b.textContent = n === maxQ && !([10,25,50,100,200].includes(n)) ? "Wszystkie" : n;
+    b.onclick = () => {
+      document.querySelectorAll("#countPills .pill").forEach(x => x.classList.remove("sel-green"));
+      b.classList.add("sel-green");
+      cfg.count = n;
+    };
+    cp.appendChild(b);
+  });
+  cfg.count = counts[0];
+
+  // Mode pills
+  document.querySelectorAll("#modePills .pill").forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll("#modePills .pill").forEach(x => x.classList.remove("sel-green", "sel-blue"));
+      b.classList.add("sel-green");
+      cfg.mode = b.dataset.v;
+    };
+  });
+
+  // Diff pills
+  document.querySelectorAll("#diffPills .pill").forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll("#diffPills .pill").forEach(x => x.classList.remove("sel-green", "sel-blue"));
+      b.classList.add("sel-green");
+      cfg.diff = b.dataset.v;
+    };
+  });
+
+  updateStartBtn();
+}
+
+function updateStartBtn() {
+  const btn = document.getElementById("startBtn");
+  if (cfg.cats.length === 0) {
+    btn.disabled = true;
+    btn.textContent = "Wybierz dział, aby rozpocząć";
+  } else {
+    btn.disabled = false;
+    const total = allQuestions.filter(q => cfg.cats.includes(q.category)).length;
+    btn.textContent = `Rozpocznij test · ${Math.min(cfg.count, total)} pytań →`;
+  }
+}
+
+document.getElementById("startBtn").onclick = startQuiz;
+
+// ═══════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════
+function buildQuestionPool() {
+  let pool = allQuestions.filter(q => cfg.cats.includes(q.category));
+
+  if (cfg.mode === "repeat") {
+    const wr = getStorage("mz_wrong_ids", []);
+    if (wr.length > 0) pool = pool.filter(q => wr.includes(q.id));
+    if (pool.length === 0) pool = allQuestions.filter(q => cfg.cats.includes(q.category));
+  }
+
+  if (cfg.diff !== "all") pool = pool.filter(q => q.difficulty === parseInt(cfg.diff));
+  return shuffle(pool).slice(0, cfg.count);
+}
+
+function startQuiz() {
+  const questions = buildQuestionPool();
+  if (questions.length === 0) {
+    alert("Brak pytań spełniających wybrane kryteria.");
+    return;
+  }
+
+  quiz = {
+    questions,
+    idx: 0, score: 0, answered: 0,
+    wrong: [], starred: quiz.starred || new Set(),
+    timerSec: 0, timerInterval: null,
+    confirmedMulti: false
+  };
+
+  clearInterval(quiz.timerInterval);
+  quiz.timerInterval = setInterval(() => {
+    quiz.timerSec++;
+    document.getElementById("timerVal").textContent = fmtTime(quiz.timerSec);
+    if (quiz.timerSec > 3600) document.getElementById("timerPill").classList.add("warning");
+  }, 1000);
+
+  document.getElementById("headerMeta").style.display = "flex";
+  document.getElementById("hdrTot").textContent = questions.length;
+  showScreen("screenQuiz");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quiz.questions[quiz.idx];
+  const total = quiz.questions.length;
+
+  // Progress
+  const pct = Math.round((quiz.idx / total) * 100);
+  document.getElementById("progFill").style.width = pct + "%";
+  document.getElementById("progLabel").textContent = `${quiz.idx + 1} / ${total}`;
+  document.getElementById("progPct").textContent = pct + "%";
+  document.getElementById("hdrCur").textContent = quiz.idx + 1;
+  document.getElementById("hdrPts").textContent = quiz.score;
+  document.getElementById("qNum").textContent = `${quiz.idx + 1}/${total}`;
+
+  // Live score
+  document.getElementById("liveScore").textContent = `${quiz.score} / ${quiz.answered}`;
+  document.getElementById("liveCat").textContent = catLabel(q.category);
+
+  // Badges
+  const badges = document.getElementById("qBadges");
+  const diffLabels = { 1: "Łatwe", 2: "Średnie", 3: "Trudne" };
+  badges.innerHTML = `
+    <span class="badge badge-cat">${catLabel(q.category)}</span>
+    <span class="badge badge-diff-${q.difficulty}">${diffLabels[q.difficulty] || "Średnie"}</span>
+    ${q.multi ? '<span class="badge badge-multi">Wielokrotny wybór</span>' : ""}
+  `;
+
+  // Question image
+  const qImg = document.getElementById("qImage");
+  if (q.question_image) {
+    qImg.src = q.question_image;
+    qImg.style.display = "block";
+  } else {
+    qImg.style.display = "none";
+  }
+
+  // Question text
+  document.getElementById("qText").textContent = q.question;
+
+  // Multi hint
+  document.getElementById("multiHint").style.display = q.multi ? "block" : "none";
+
+  // Source
+  document.getElementById("sourceTag").textContent = q.source ? `Źródło: ${q.source}` : "";
+
+  // Reset UI
+  document.getElementById("explanationBlock").classList.remove("show", "ok", "err");
+  document.getElementById("confirmBtn").style.display = q.multi ? "inline-block" : "none";
+  document.getElementById("confirmBtn").disabled = true;
+  document.getElementById("nextBtn").disabled = true;
+  quiz.confirmedMulti = false;
+
+  // Star button
+  const starBtn = document.getElementById("starBtn");
+  const isStarred = quiz.starred.has(q.id);
+  starBtn.textContent = isStarred ? "★" : "☆";
+  starBtn.className = "btn-icon" + (isStarred ? " starred" : "");
+
+  // Render answers (shuffled)
+  const answersDiv = document.getElementById("answersDiv");
+  answersDiv.innerHTML = "";
+  const shuffled = shuffle(q.answers);
+
+  shuffled.forEach(a => {
+    const btn = document.createElement("button");
+    btn.className = "ans-btn";
+    btn.dataset.key = a.key;
+    btn.dataset.correct = a.correct;
+    btn.dataset.exp = a.explanation;
+
+    let inner = `<span class="ans-key">${a.key}</span>
+      <span class="ans-text">${a.text}`;
+    if (a.image) inner += `<img class="ans-img" src="${a.image}" alt="">`;
+    inner += `</span>`;
+    btn.innerHTML = inner;
+
+    if (!q.multi) {
+      btn.onclick = () => handleSingle(btn, q);
+    } else {
+      btn.onclick = () => handleMultiToggle(btn, q);
+    }
+    answersDiv.appendChild(btn);
+  });
+}
+
+function handleSingle(btn, q) {
+  const allBtns = document.querySelectorAll(".ans-btn");
+  allBtns.forEach(b => b.disabled = true);
+
+  const correct = btn.dataset.correct === "true";
+  quiz.answered++;
+  if (correct) quiz.score++;
+  else quiz.wrong.push(q.id);
+
+  if (cfg.mode === "learn") {
+    allBtns.forEach(b => {
+      if (b.dataset.correct === "true") b.classList.add("correct");
+      else if (b === btn) b.classList.add("wrong");
+    });
+    showExplanations(q, correct);
+  }
+
+  document.getElementById("hdrPts").textContent = quiz.score;
+  document.getElementById("liveScore").textContent = `${quiz.score} / ${quiz.answered}`;
+  document.getElementById("nextBtn").disabled = false;
+}
+
+function handleMultiToggle(btn) {
+  if (quiz.confirmedMulti) return;
+  btn.classList.toggle("sel");
+  const selCount = document.querySelectorAll(".ans-btn.sel").length;
+  document.getElementById("confirmBtn").disabled = selCount === 0;
+}
+
+document.getElementById("confirmBtn").onclick = function () {
+  const q = quiz.questions[quiz.idx];
+  quiz.confirmedMulti = true;
+  this.style.display = "none";
+
+  const allBtns = document.querySelectorAll(".ans-btn");
+  allBtns.forEach(b => b.disabled = true);
+
+  const correctKeys = new Set(q.answers.filter(a => a.correct).map(a => a.key));
+  const selectedKeys = new Set(
+    Array.from(document.querySelectorAll(".ans-btn.sel")).map(b => b.dataset.key)
+  );
+
+  const allCorrect =
+    [...correctKeys].every(k => selectedKeys.has(k)) &&
+    [...selectedKeys].every(k => correctKeys.has(k));
+
+  if (cfg.mode === "learn") {
+    allBtns.forEach(b => {
+      const key = b.dataset.key;
+      const isCor = correctKeys.has(key);
+      const isSel = selectedKeys.has(key);
+      if (isCor && isSel) b.classList.add("correct");
+      else if (!isCor && isSel) b.classList.add("wrong");
+      else if (isCor && !isSel) b.classList.add("missed");
+    });
+    showExplanations(q, allCorrect);
+  }
+
+  quiz.answered++;
+  if (allCorrect) quiz.score++;
+  else quiz.wrong.push(q.id);
+
+  document.getElementById("hdrPts").textContent = quiz.score;
+  document.getElementById("liveScore").textContent = `${quiz.score} / ${quiz.answered}`;
+  document.getElementById("nextBtn").disabled = false;
+};
+
+function showExplanations(q, correct) {
+  const block = document.getElementById("explanationBlock");
+  const header = document.getElementById("expHeader");
+  const body = document.getElementById("expBody");
+
+  block.className = "explanation-block show " + (correct ? "ok" : "err");
+  header.textContent = correct ? "✓ Prawidłowa odpowiedź" : "✗ Błędna odpowiedź";
+
+  // Pokaż wyjaśnienia do wszystkich odpowiedzi lub tylko do poprawnej/wybranej
+  const hasMultiExp = q.answers.some(a => a.explanation);
+  if (hasMultiExp) {
+    body.innerHTML = q.answers.map(a => {
+      if (!a.explanation) return "";
+      return `<div class="exp-ans-row">
+        <span class="exp-ans-key">${a.key}:</span> ${a.explanation}
+      </div>`;
+    }).join("");
+  } else {
+    const correctA = q.answers.find(a => a.correct);
+    body.textContent = correctA?.explanation || "Brak wyjaśnienia.";
+  }
+}
+
+document.getElementById("nextBtn").onclick = function () {
+  quiz.idx++;
+  if (quiz.idx >= quiz.questions.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+};
+
+document.getElementById("starBtn").onclick = function () {
+  const q = quiz.questions[quiz.idx];
+  if (quiz.starred.has(q.id)) quiz.starred.delete(q.id);
+  else quiz.starred.add(q.id);
+  const isStarred = quiz.starred.has(q.id);
+  this.textContent = isStarred ? "★" : "☆";
+  this.className = "btn-icon" + (isStarred ? " starred" : "");
+};
+
+document.getElementById("flagBtn").onclick = function () {
+  const q = quiz.questions[quiz.idx];
+  alert(`Pytanie ${q.id} zostało zgłoszone. Dziękujemy!`);
+};
+
+// ═══════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════
+function showResults() {
+  clearInterval(quiz.timerInterval);
+
+  const pct = quiz.answered > 0 ? Math.round((quiz.score / quiz.answered) * 100) : 0;
+  const m = Math.floor(quiz.timerSec / 60), s = quiz.timerSec % 60;
+
+  // Ring
+  const circumference = 263.9;
+  const offset = circumference - (pct / 100) * circumference;
+  const ring = document.getElementById("ringFill");
+  ring.style.strokeDashoffset = circumference;
+  setTimeout(() => { ring.style.strokeDashoffset = offset; }, 100);
+  ring.className = "ring-fill " + (pct >= 70 ? "" : pct >= 50 ? "mid" : "low");
+
+  // Score text
+  const pctEl = document.getElementById("resPct");
+  pctEl.textContent = pct + "%";
+  pctEl.className = "score-pct " + (pct >= 70 ? "high" : pct >= 50 ? "mid" : "low");
+
+  // Title
+  let title = "Dobry wynik!";
+  if (pct >= 90) title = "Doskonały wynik!";
+  else if (pct >= 70) title = "Dobry wynik!";
+  else if (pct >= 50) title = "Prawie zdałeś!";
+  else title = "Potrzebujesz więcej ćwiczeń";
+
+  document.getElementById("resTitle").textContent = title;
+  document.getElementById("resSub").textContent =
+    `${quiz.score} z ${quiz.answered} pkt · czas ${m}:${String(s).padStart(2, "0")}`;
+
+  document.getElementById("resCorrect").textContent = quiz.score;
+  document.getElementById("resWrong").textContent = quiz.answered - quiz.score;
+  document.getElementById("resTime").textContent = `${m}:${String(s).padStart(2, "0")}`;
+
+  // Save wrong answers
+  const existing = getStorage("mz_wrong_ids", []);
+  const merged = [...new Set([...existing, ...quiz.wrong])];
+  setStorage("mz_wrong_ids", merged);
+
+  // Wrong list
+  const ws = document.getElementById("wrongSection");
+  if (quiz.wrong.length > 0) {
+    ws.innerHTML = `<div class="wrong-section-title">Do powtórzenia (${quiz.wrong.length})</div>`;
+    quiz.wrong.forEach(id => {
+      const q = quiz.questions.find(x => x.id === id);
+      if (!q) return;
+      const correctKeys = q.answers.filter(a => a.correct).map(a => a.key).join(", ");
+      const div = document.createElement("div");
+      div.className = "wrong-item";
+      const short = q.question.length > 100 ? q.question.substring(0, 97) + "…" : q.question;
+      div.innerHTML = `
+        <div class="wrong-q">${short}</div>
+        <div class="wrong-row">
+          <span class="wrong-correct">✓ Prawidłowa: ${correctKeys}</span>
+        </div>`;
+      ws.appendChild(div);
+    });
+  } else {
+    ws.innerHTML = "";
+  }
+
+  document.getElementById("headerMeta").style.display = "none";
+  showScreen("screenResults");
+}
+
+document.getElementById("btnNewTest").onclick = () => {
+  showScreen("screenSetup");
+};
+
+document.getElementById("btnRepeatWrong").onclick = () => {
+  cfg.mode = "repeat";
+  document.querySelectorAll("#modePills .pill").forEach(b => {
+    b.classList.remove("sel-green");
+    if (b.dataset.v === "repeat") b.classList.add("sel-green");
+  });
+  showScreen("screenSetup");
+};
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+loadData();
+</script>
+</body>
+</html>
